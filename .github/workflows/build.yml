@@ -1,5 +1,7 @@
 name: Build sam3cpp Windows Wheel
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
 jobs:
   build:
     runs-on: windows-latest
