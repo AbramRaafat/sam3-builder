@@ -1,0 +1,23 @@
+name: Build sam3cpp Windows Wheel
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Clone Repository
+        run: git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/PABannier/sam3.cpp
+      - name: Build the Python Wheel
+        run: |
+          cd sam3.cpp
+          python -m pip install setuptools wheel cmake pybind11
+          $env:SAM3_BUILD_PYBIND="ON"
+          python -m pip wheel . -w dist/
+      - name: Upload Finished File
+        uses: actions/upload-artifact@v4
+        with:
+          name: sam3cpp-windows-wheel
+          path: sam3.cpp/dist/*.whl
