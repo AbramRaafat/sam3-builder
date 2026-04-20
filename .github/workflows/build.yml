@@ -6,27 +6,26 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Set up Python
+      - name: Initialize Python Environment
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           
-      - name: Clone Developer Fork
-        # Target the fork containing the pending pybind11 implementation.
+      - name: Fetch Backend Fork
         run: git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/omar-A-hassan/sam3.cpp
         
-      - name: Build the Python Wheel
+      - name: Compile Native Extension
         run: |
           cd sam3.cpp
           python -m pip install setuptools wheel cmake pybind11 scikit-build-core
           
-          # Inject CMake configuration to trigger the pybind11 wrapper compilation.
+          # Instructs the underlying CMake process to compile the pybind wrapper.
           $env:CMAKE_ARGS="-DSAM3_BUILD_PYBIND=ON"
           
-          # Execute isolated wheel build.
+          # Generates the architecture-specific binary wheel in the dist/ directory.
           python -m pip wheel . -w dist/ --no-deps
           
-      - name: Upload Finished File
+      - name: Archive Artifact
         uses: actions/upload-artifact@v4
         with:
           name: sam3cpp-windows-wheel
