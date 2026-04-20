@@ -11,18 +11,19 @@ jobs:
         with:
           python-version: '3.11'
           
-      - name: Clone Repository
-        run: git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/PABannier/sam3.cpp
+      - name: Clone Developer Fork
+        # Target the fork containing the pending pybind11 implementation.
+        run: git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/omar-A-hassan/sam3.cpp
         
       - name: Build the Python Wheel
         run: |
           cd sam3.cpp
           python -m pip install setuptools wheel cmake pybind11 scikit-build-core
           
-          # Pass the build flag directly to the CMake configuration phase
+          # Inject CMake configuration to trigger the pybind11 wrapper compilation.
           $env:CMAKE_ARGS="-DSAM3_BUILD_PYBIND=ON"
           
-          # Isolate the wheel build. --no-deps prevents packaging third-party libraries.
+          # Execute isolated wheel build.
           python -m pip wheel . -w dist/ --no-deps
           
       - name: Upload Finished File
